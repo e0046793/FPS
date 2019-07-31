@@ -122,4 +122,12 @@ func foldr<A, B>(_ f: @escaping (A) -> (B) -> B) -> (B) -> ([A]) -> B {
     }
 }
 
-let handler = foldr(<#T##f: (A) -> (B) -> B##(A) -> (B) -> B#>)
+let reverseInt = foldr { (element: Int) -> (Array<Int>) -> Array<Int> in
+    return { acc in
+        var newArray = acc
+        newArray.append(element)
+        return newArray
+    }
+}
+let c = reverseInt(Array<Int>())([1,2,3])
+print(c)
