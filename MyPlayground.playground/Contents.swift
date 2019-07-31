@@ -115,9 +115,9 @@ print(b)
 func foldr<A, B>(_ f: @escaping (A) -> (B) -> B) -> (B) -> ([A]) -> B {
     return { acc in
         return { list in
-            guard let last = list.last else { return acc }
-            let remain = Array(list.dropLast())
-            return f (last) ( foldr(f)(acc)(remain) )
+            guard let first = list.first else { return acc }
+            let tail = Array(list.dropFirst())
+            return f (first) ( foldr(f)(acc)(tail) )
         }
     }
 }
