@@ -233,7 +233,9 @@ takeWhile' f xs = if (snd . head) bs == False then []
 
 
 --- 7.9.2.d
--- dropWhile' :: (a -> Bool) -> [a] -> [a]
--- dropWhile' = 
+dropWhile' :: (a -> Bool) -> [a] -> [a]
+dropWhile' f xs = if (snd . head) bs == False then xs
+                  else dropWhile' f (tail xs)
+                  where bs = [(x, y) | (x, y) <- zip xs (map f xs)] 
 
  
