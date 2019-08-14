@@ -212,3 +212,28 @@ reverse' = foldl (\acc x -> x:acc) []
 
 reverse'' :: [a] -> [a]
 reverse'' = foldr (\x acc -> x:acc) []
+
+
+--- 7.9.1
+--- (filter p . map f) xs
+
+--- 7.9.2.a
+all'' :: (a -> Bool) -> [a] -> Bool
+all'' f = foldl (\acc x -> acc Prelude.&& x) True . map f
+
+--- 7.9.2.b
+any'' :: (a -> Bool) -> [a] -> Bool
+any'' f = foldl (\acc x -> acc Prelude.|| x) False . map f
+
+--- 7.9.2.c
+takeWhile' :: (a -> Bool) -> [a] -> [a]
+takeWhile' f xs = if (snd . head) bs == False then [] 
+                  else (fst . head) bs : takeWhile' f (tail xs)
+                  where bs = [(x, y) | (x, y) <- zip xs (map f xs)]
+
+
+--- 7.9.2.d
+-- dropWhile' :: (a -> Bool) -> [a] -> [a]
+-- dropWhile' = 
+
+ 

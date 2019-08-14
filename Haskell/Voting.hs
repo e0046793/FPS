@@ -37,7 +37,4 @@ rank = map snd . result . map head
 winner' :: Ord a => [[a]] -> a
 winner' bs = case rank (rmempty bs) of [c] -> c
                                        (c:cs) -> winner' (elim c bs)
-
-all' :: (a -> Bool) -> [Bool] -> Bool
-all' f = map f
                                        
