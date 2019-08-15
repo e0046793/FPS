@@ -215,15 +215,15 @@ reverse'' = foldr (\x acc -> x:acc) []
 
 
 --- 7.9.1
---- (filter p . map f) xs
+--- map f (filter p xs)
 
 --- 7.9.2.a
-all'' :: (a -> Bool) -> [a] -> Bool
-all'' f = foldl (\acc x -> acc Prelude.&& x) True . map f
+-- all' :: (a -> Bool) -> [Bool] -> Bool
+-- all' p = and . map p
 
 --- 7.9.2.b
-any'' :: (a -> Bool) -> [a] -> Bool
-any'' f = foldl (\acc x -> acc Prelude.|| x) False . map f
+-- any' :: (a -> Bool) -> [Bool] -> Bool
+-- any' p = or . map p
 
 --- 7.9.2.c
 takeWhile' :: (a -> Bool) -> [a] -> [a]
@@ -238,4 +238,23 @@ dropWhile' f xs = if (snd . head) bs == False then xs
                   else dropWhile' f (tail xs)
                   where bs = [(x, y) | (x, y) <- zip xs (map f xs)] 
 
+--- 7.9.3
+map' :: (a -> b) -> [a] -> [b]
+map' f = foldr (\x acc -> (f x) : acc) []
+
+filter' :: (a -> Bool) -> [a] -> [a]
+filter' f = foldr (\x acc -> if f x then x : acc else acc) []
+
+--- 7.9.4
+dec2int :: [Int] -> Int
+dec2int = foldl (\acc x -> acc * 10 + x) 0
  
+--- 7.9.5
+curry :: ((a,b) -> c) -> a -> b -> c
+curry f = \x y -> f (x, y)
+
+uncurry :: (a -> b -> c) -> ((a,b) -> c)
+uncurry f = \(x, y) -> f x y
+
+sample :: (a -> b -> c) -> a -> b -> c
+sample f = \x y -> f x y
