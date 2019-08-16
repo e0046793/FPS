@@ -256,5 +256,26 @@ curry f = \x y -> f (x, y)
 uncurry :: (a -> b -> c) -> ((a,b) -> c)
 uncurry f = \(x, y) -> f x y
 
-sample :: (a -> b -> c) -> a -> b -> c
-sample f = \x y -> f x y
+--- 7.9.6
+unfold p h t x | p x       = []
+               | otherwise = h x : unfold p h t (t x)
+
+int2bin :: Int -> [Int]
+-- int2bin 0 = []
+-- int2bin n = n `mod` 2 : int2bin (n `div` 2)
+int2bin = unfold (== 0) (`mod` 2) (`div` 2)
+
+chop8 :: [Int] -> [[Int]]
+-- chop8 []   = []
+-- chop8 bits = take 8 bits : chop8 (drop 8 bits)
+chop8 = unfold (== []) (take 8) (drop 8)
+
+map'' :: (a -> b) -> [a] -> [b]
+map'' _ []     = []
+map'' f (x:xs) = f x : map'' f xs
+-- map'' f a = unfold (== []) (f head a) (tail a) 
+
+--- 7.9.9
+altMap :: (a -> b) -> (a -> b) -> [a] -> [b]
+altMap _ _ []  = [] 
+altMap f g xs  = [if Prelude.even i then f v else g v | (i, v) <- zip indices xs] where indices = iterate (+1) 0
