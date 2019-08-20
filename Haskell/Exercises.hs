@@ -271,9 +271,11 @@ chop8 :: [Int] -> [[Int]]
 chop8 = unfold (== []) (take 8) (drop 8)
 
 map'' :: (a -> b) -> [a] -> [b]
-map'' _ []     = []
-map'' f (x:xs) = f x : map'' f xs
--- map'' f a = unfold (== []) (f head a) (tail a) 
+map'' f = unfold (null) (f . head) (drop 1) 
+
+iterate'' :: (a -> a) -> a -> [a]
+-- iterate'' f x = x : iterate'' f (f x)
+iterate'' f = unfold (null . (: [])) (id) (f) 
 
 --- 7.9.9
 altMap :: (a -> b) -> (a -> b) -> [a] -> [b]
