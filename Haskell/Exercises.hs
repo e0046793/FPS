@@ -1,3 +1,5 @@
+import Data.Char
+
 
 halve :: Eq a => [a] -> ([a],[a])
 halve x | x == [] = ([],[])
@@ -104,11 +106,11 @@ positions k t = find k [(x',i) | (x',i) <- zip t [0..]]
 scalarproduct :: [Int] -> [Int] -> Int
 scalarproduct xs ys = sum [x*y | (x,y) <- zip xs ys]
 
-
+{- Disable temporary in order to activate Prelude.++
 (++) :: [a] -> [a] -> [a]
 []     ++ ys = ys
 (x:xs) ++ ys = x : xs Main.++ ys
-
+-}
 
 insert :: Ord a => a -> [a] -> [a]
 insert x []     = [x]
@@ -261,23 +263,60 @@ unfold p h t x | p x       = []
                | otherwise = h x : unfold p h t (t x)
 
 int2bin :: Int -> [Int]
--- int2bin 0 = []
--- int2bin n = n `mod` 2 : int2bin (n `div` 2)
 int2bin = unfold (== 0) (`mod` 2) (`div` 2)
 
 chop8 :: [Int] -> [[Int]]
--- chop8 []   = []
--- chop8 bits = take 8 bits : chop8 (drop 8 bits)
 chop8 = unfold (== []) (take 8) (drop 8)
 
 map'' :: (a -> b) -> [a] -> [b]
 map'' f = unfold (null) (f . head) (drop 1) 
 
 iterate'' :: (a -> a) -> a -> [a]
--- iterate'' f x = x : iterate'' f (f x)
-iterate'' f = unfold (null . (: [])) (id) (f) 
+-- iterate'' f = unfold (null . (: [])) (id) (f) 
+iterate'' f = unfold (const False) id f
+
+--- 7.9.7
+type Bit = Int
+
+bin2int :: [Bit] -> Int
+bin2int = foldr (\x acc -> x + 2 * acc) 0
+
+make8 :: [Bit] -> [Bit]
+make8 bits = take 8 (bits ++ repeat 0)
+
+transmit :: String -> String
+transmit = decode . channel . encode
+
+channel :: [Bit] -> [Bit]
+channel = id 
+
+encode :: String -> [Bit]
+encode = concat . map (addparity . make8 . int2bin . ord)
+
+chop9 :: [Bit] -> [[Bit]]
+chop9 = unfold (null) (take 9) (drop 9)
+
+addparity :: [Bit] -> [Bit]
+addparity bits = bits ++ [computeparity bits]
+
+computeparity :: [Bit] -> Bit
+computeparity bits = sum bits `mod` 2
+
+verify :: [Bit] -> [Bit]
+verify (x:xs) = if x == (computeparity xs) then xs else error "bit mismatch"
+
+decode :: [Bit] -> String
+decode = map (chr . bin2int . verify) . chop9
+
+--- 7.9.8
+faultychannel :: [Bit] -> [Bit]
+faultychannel = tail
 
 --- 7.9.9
 altMap :: (a -> b) -> (a -> b) -> [a] -> [b]
 altMap _ _ []  = [] 
 altMap f g xs  = [if Prelude.even i then f v else g v | (i, v) <- zip indices xs] where indices = iterate (+1) 0
+
+--- 7.9.10
+luhn' :: [Int] -> Bool
+luhn' = Prelude.even . foldr (+) 0 . altMap (id) (luhnDouble)
