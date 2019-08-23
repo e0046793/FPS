@@ -320,3 +320,27 @@ altMap f g xs  = [if Prelude.even i then f v else g v | (i, v) <- zip indices xs
 --- 7.9.10
 luhn' :: [Int] -> Bool
 luhn' = Prelude.even . foldr (+) 0 . altMap (id) (luhnDouble)
+
+
+--- 8.9.1
+data Nat = Zero | Succ Nat deriving Show
+
+nat2int :: Nat -> Int
+nat2int Zero     = 0
+nat2int (Succ n) = 1 + nat2int n
+
+int2nat :: Int -> Nat
+int2nat 0 = Zero
+int2nat n = Succ (int2nat (n-1))
+
+{- add :: Nat -> Nat -> Nat
+add x y = int2nat (nat2int x + nat2int y) -}
+
+add :: Nat -> Nat -> Nat
+add Zero n     = n
+add (Succ m) n = Succ (add m n)
+
+mult :: Nat -> Nat -> Nat
+mult Zero        n = Zero
+mult (Succ Zero) n = n
+mult m           n = add n (mult )
