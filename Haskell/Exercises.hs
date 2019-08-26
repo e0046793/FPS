@@ -340,7 +340,7 @@ add :: Nat -> Nat -> Nat
 add Zero n     = n
 add (Succ m) n = Succ (add m n)
 
-mult :: Nat -> Nat -> Nat
-mult Zero        n = Zero
-mult (Succ Zero) n = n
-mult m           n = add n (mult )
+multnat :: Nat -> Nat -> Nat
+multnat Zero        _ = Zero
+multnat (Succ Zero) n = n
+multnat m           n = foldl (add) Zero (take (nat2int n) (repeat m))
