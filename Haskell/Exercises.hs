@@ -333,9 +333,6 @@ int2nat :: Int -> Nat
 int2nat 0 = Zero
 int2nat n = Succ (int2nat (n-1))
 
-{- add :: Nat -> Nat -> Nat
-add x y = int2nat (nat2int x + nat2int y) -}
-
 add :: Nat -> Nat -> Nat
 add Zero n     = n
 add (Succ m) n = Succ (add m n)
@@ -344,3 +341,46 @@ multnat :: Nat -> Nat -> Nat
 multnat Zero        _ = Zero
 multnat (Succ Zero) n = n
 multnat m           n = foldl (add) Zero (take (nat2int n) (repeat m))
+
+--- 8.9.2
+{-data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving Show
+
+t :: Tree Int
+t = Node (Node (Leaf 1) 3 (Leaf 4)) 5 (Node (Leaf 6) 7 (Leaf 9))
+
+occurs :: Eq a => a -> Tree a -> Bool
+occurs x (Leaf y)     = x == y
+occurs x (Node l y r) = x == y || occurs x r || occurs x l
+
+{- Using compare:: is more efficient than original way since we know which node side to add the value -}
+occurs' :: Ord a => a -> Tree a -> Bool
+occurs' x (Leaf y)     = x == y
+occurs' x (Node l y r) = if order == EQ then True else
+                           if order == LT then occurs' x l else
+                            if order == GT then occurs' x r else False
+                            where order = compare x y
+
+flatten :: Tree a -> [a]
+flatten (Leaf x)   = [x]
+flatten (Node l y r) =  flatten l ++ [y] ++ flatten r-}
+
+--- 8.9.3
+data Tree a = Leaf a | Node (Tree a) (Tree a) deriving Show
+
+leaves :: Tree a -> Int
+leaves (Leaf x) = 1
+leaves (Node x y) = leaves x + leaves y
+
+balanced :: Tree a -> Bool
+balanced (Leaf x) = True
+balanced (Node x y) = leaves x == leaves y
+
+--- 8.9.4
+balance :: Ord a => [a] -> Tree a
+balance []  = error "empty list"
+balance [x] = Leaf x
+balance x   = Node (balance lh) (balance rh) 
+           where 
+            lh = (fst . halve') sorted
+            rh = (snd . halve') sorted
+            sorted = qsort x
