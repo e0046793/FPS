@@ -338,9 +338,13 @@ add Zero n     = n
 add (Succ m) n = Succ (add m n)
 
 multnat :: Nat -> Nat -> Nat
-multnat Zero        _ = Zero
-multnat (Succ Zero) n = n
-multnat m           n = foldl (add) Zero (take (nat2int n) (repeat m))
+-- multnat Zero        _ = Zero
+-- multnat (Succ Zero) n = n
+-- multnat m           n = foldl (add) Zero (take (nat2int n) (repeat m))
+
+multnat m Zero     = Zero
+multnat m (Succ n) = add m (multnat m n)
+
 
 --- 8.9.2
 {-data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving Show
@@ -352,12 +356,14 @@ occurs :: Eq a => a -> Tree a -> Bool
 occurs x (Leaf y)     = x == y
 occurs x (Node l y r) = x == y || occurs x r || occurs x l
 
-{- Using compare:: is more efficient than original way since we know which node side to add the value -}
+{- Using compare:: is more efficient than original way since it only requires one comparison between x and y
+for ecah node, whereas the previous version may require two. -}
 occurs' :: Ord a => a -> Tree a -> Bool
 occurs' x (Leaf y)     = x == y
-occurs' x (Node l y r) = if order == EQ then True else
-                           if order == LT then occurs' x l else
-                            if order == GT then occurs' x r else False
+occurs' x (Node l y r) = case order of 
+                            LT -> occurs' x l
+                            ER -> True
+                            GT -> occurs' x r
                             where order = compare x y
 
 flatten :: Tree a -> [a]
@@ -368,12 +374,13 @@ flatten (Node l y r) =  flatten l ++ [y] ++ flatten r-}
 data Tree a = Leaf a | Node (Tree a) (Tree a) deriving Show
 
 leaves :: Tree a -> Int
-leaves (Leaf x) = 1
-leaves (Node x y) = leaves x + leaves y
+leaves (Leaf _) = 1
+leaves (Node l r) = leaves l + leaves r
 
 balanced :: Tree a -> Bool
-balanced (Leaf x) = True
-balanced (Node x y) = leaves x == leaves y
+balanced (Leaf _) = True
+balanced (Node l r) = abs(leaves l - leaves r) <= 1 
+                      Prelude.&& balanced l Prelude.&& balanced r
 
 --- 8.9.4
 balance :: Ord a => [a] -> Tree a
@@ -384,3 +391,7 @@ balance x   = Node (balance lh) (balance rh)
             lh = (fst . halve') sorted
             rh = (snd . halve') sorted
             sorted = qsort x
+{- sorter solution 
+balance xs = Node (balance ys) (balance zs)
+             where (ys,zs) = (halve' . qsort) xs
+-}
