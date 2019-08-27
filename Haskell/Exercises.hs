@@ -395,3 +395,57 @@ balance x   = Node (balance lh) (balance rh)
 balance xs = Node (balance ys) (balance zs)
              where (ys,zs) = (halve' . qsort) xs
 -}
+
+--- 8.9.5
+-- data Expr = Val Int | Add Expr Expr 
+
+-- a :: Expr
+-- a = Add (Val 3) (Add (Val 2) (Add (Val 5) (Val 7)))
+
+-- folde :: (Int -> a) -> (a -> a -> a) -> Expr -> a
+-- folde f _ (Val x)   = f x
+-- folde f g (Add x y) = g (folde f g x) (folde f g y)
+
+-- --- 8.9.6
+-- eval :: Expr -> Int
+-- eval (Val x) = x
+-- eval expr    = folde (id) (+) expr
+
+-- size :: Expr -> Int
+-- size expr    = folde (\x -> 1) (+) expr
+
+--- 8.9.7
+-- instance Eq a => Eq (Maybe a) where
+--     Nothing == Nothing = True
+--     Just a  == Just a  = True
+--     _       == _       = False
+
+-- instance Eq a => Eq [a] where
+--     []     == []     = True
+--     (x:xs) == (y:ys) = x == y && xs == ys
+--     xs     == ys     = False
+
+--- 8.9.8
+
+--- 8.9.9
+data Expr = Val Int | Add Expr Expr | Mul Expr Expr
+
+a :: Expr
+a = Mul (Val 2) (Add (Val 3) (Add (Val 2) (Add (Val 5) (Val 7))))
+
+b :: Expr
+b = Add (Val 2) (Mul (Val 3) (Val 4))
+
+data Cont = STOP | EVAL Expr Expr | Add Int Cont
+
+eval :: Expr -> Cont -> Int
+eval (Val n)   c = exec c n
+eval (Add x y) c = eval x (EVAL y c)
+
+exec :: Cont -> Int -> Int
+exec STOP       n = n
+exec (EVAL y c) n = eval y (ADD n c)
+exec (ADD n c)  m = exec c (n + m)
+
+run :: Expr -> Int
+run e = eval e STOP
