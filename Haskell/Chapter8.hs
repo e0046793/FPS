@@ -178,6 +178,9 @@ isTaut p = and [eval s p | s <- substs p]
 {- Abstract Machine -}
 data Expr = Val Int | Add Expr Expr
 
+b :: Expr
+b = Add (Val 2) (Mul (Val 3) (Val 4))
+
 value :: Expr -> Int
 value (Val n)   = n
 value (Add x y) = value x + value y

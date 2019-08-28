@@ -431,21 +431,24 @@ balance xs = Node (balance ys) (balance zs)
 data Expr = Val Int | Add Expr Expr | Mul Expr Expr
 
 a :: Expr
-a = Mul (Val 2) (Add (Val 3) (Add (Val 2) (Add (Val 5) (Val 7))))
+a = Mul (Val 2) (Add (Add (Val 2) (Val 3)) (Val 4))
 
 b :: Expr
 b = Add (Val 2) (Mul (Val 3) (Val 4))
 
-data Cont = STOP | EVAL Expr Expr | Add Int Cont
+data Cont = STOP | EVAL Expr Cont | ADD Int Cont | EVALMUL Expr Cont | MUL Int Cont
 
 eval :: Expr -> Cont -> Int
-eval (Val n)   c = exec c n
-eval (Add x y) c = eval x (EVAL y c)
+eval (Val n)           c = exec c n
+eval (Add x y)         c = eval x (EVAL y c)
+eval (Mul x y)         c = eval x (EVALMUL y c)
 
 exec :: Cont -> Int -> Int
-exec STOP       n = n
-exec (EVAL y c) n = eval y (ADD n c)
-exec (ADD n c)  m = exec c (n + m)
+exec STOP          n = n
+exec (EVAL y c)    n = eval y (ADD n c)
+exec (EVALMUL y c) n = eval y (MUL n c)
+exec (ADD n c)     m = exec c (n + m)
+exec (MUL n c)     m = exec c (n * m)
 
 run :: Expr -> Int
 run e = eval e STOP
