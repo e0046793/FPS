@@ -17,12 +17,31 @@ b = [6, 3, -1, -3, 4, -2, 2, 4, 6, -12, -7]
 c :: [Int]
 c = [-1, 1, 5, -5, -1]
 
-sumzero :: [Int] -> Bool
-sumzero [] = True
-sumzero xs = 0 == foldl (+) 0 xs
+type Assoc k v = [(k,v)]
+find :: Eq k => k -> Assoc k v -> v
+find k t = head [v | (k',v) <- t, k == k']
 
-c1 :: [Int] -> [[Int]] -> [[Int]]
-c1 []     y     = y
-c1 (x:xs) [[0]] = [[x]]
-c1 (x:xs) value = c1 xs (map (map (+ x)) value)
+type HashTable = Assoc Int [Int]
 
+subzerosumset :: [Int] -> [[Int]]
+subzerosumset xs = [ v | (k, v) <- subsumset xs, k == 0]
+
+subsumset :: [Int] -> HashTable
+subsumset []     = [] 
+subsumset (x:xs) = gethash x xs ++ subsumset xs 
+
+nosumset :: [Int] -> Int
+nosumset =  length . filter (==0) . sumset 
+
+sumset :: [Int] -> [Int]
+sumset []     = []
+sumset [n]    = []
+sumset (x:xs) = accumualte x xs ++ sumset xs
+
+accumualte :: Int -> [Int] -> [Int]
+accumualte _ [] = []
+accumualte x ys = [x + sum ys] ++ accumualte x (init ys)
+
+gethash :: Int -> [Int] -> HashTable
+gethash _ [] = []
+gethash x ys = [((x + sum ys), (x : ys))] ++ gethash x (init ys)
