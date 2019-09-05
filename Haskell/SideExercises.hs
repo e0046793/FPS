@@ -1,3 +1,5 @@
+import Data.List
+
 --- Find subset of an array
 a :: [Int]
 a = [6, 3]
@@ -88,7 +90,7 @@ jumpingOnClouds = length . optimisedjumps 0 . drop 1 . steps 0 . index0bit
 
 index0bit :: [Int] -> [Int]
 index0bit []   = []
-index0bit bits = [i | (i,b) <- zip index bits, 0 == b] where index = iterate (+ 1) 0 
+index0bit bits = [i | (i,b) <- zip index bits, 0 == b] where index = iterate (+1) 0 
 
 steps :: Int -> [Int] -> [Int]
 steps _   []   = []
@@ -99,6 +101,50 @@ optimisedjumps _     [] = []
 optimisedjumps n (x:xs) = if 1 == n && 1 == x then (n + x) : optimisedjumps (head xs) (drop 1 xs)
                           else n : optimisedjumps x xs
 
+{- Counting valleys -}
+countingValleys :: Int -> String -> Int
+countingValleys _ [] = 0
+countingValleys n  s | n < 2 || n > 10^6 = 0
+                     | n /= length s  = 0
+                     | otherwise = countvalleys (head bits) (tail bits) 0
+                     where bits = convert s
+
+t1 :: String 
+t1 = "DDUUUUDD"
+
+t2 :: String 
+t2 = "UDDDUDUU"
+
+t3 :: String
+t3 = t1 ++ reverse t2
+
+countvalleys :: Int -> [Int] -> Int -> Int
+countvalleys _     [] c = c
+countvalleys n (x:xs) c = if 0 == n + x && n < x then countvalleys (n + x) xs (c + 1)
+                          else countvalleys (n + x) xs c
+
+convert :: String -> [Int]
+convert [] = []
+convert  s = map (\c -> if 'U' == c then 1 else (-1)) s
+
+{- Arrays: Left Rotation -}
+
+rotLeft :: [Int] -> Int -> [Int]
+rotLeft []     _ = []
+rotLeft xs     0 = xs
+rotLeft (x:xs) n | n < 1 || n > 10^5 = []
+                 | otherwise         = if n' == 0 then (x:xs)
+                                       else rotLeft (xs ++ [x]) (n' - 1)
+                 where n' = n `mod` length (x:xs)
+
+rotLeft' :: [Int] -> Int -> [Int]
+rotLeft' [] _ = []
+rotLeft' xs 0 = xs
+rotLeft' xs n | n < 1 || n > 10^5 = []
+                  | otherwise     = if n' == 0 then xs
+                                    else allRotations xs !! n'
+                   where n' = n `mod` length xs
 
 
-
+allRotations :: [a] -> [[a]]
+allRotations l = init (zipWith (++) (tails l) (inits l))
