@@ -131,3 +131,41 @@ let reverseInt = foldr { (element: Int) -> (Array<Int>) -> Array<Int> in
 }
 let c = reverseInt(Array<Int>())([1,2,3])
 print(c)
+
+func jumpingOnClouds(c: [Int]) -> Int {
+    var counter = 0
+    var pointer = 0
+    
+    while (pointer < c.count - 1) {
+        pointer = pointer + 2
+        
+        if pointer > c.count - 1 {
+            pointer = pointer - 1
+        }
+        
+        if c[pointer] == 1 { pointer = pointer - 1 }
+        counter = counter + 1
+        print(pointer)
+    }
+    return counter
+}
+
+print("no of jump: \(jumpingOnClouds(c: [0, 0, 0, 1, 0, 0]))")
+print("no of jump: \(jumpingOnClouds(c: [0, 0, 1, 0, 0, 1, 0]))")
+print("no of jump: \(jumpingOnClouds(c: [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]))")
+
+
+precedencegroup PowerPrecedence { higherThan: MultiplicationPrecedence }
+infix operator ^^ : PowerPrecedence
+func ^^ (radix: Int, power: Int) -> Int {
+    return Int(pow(Double(radix), Double(power)))
+}
+
+// Complete the countingValleys function below.
+func accumulate(n: Int, ys: [Int]) -> [Int] {
+    guard false == ys.isEmpty else {
+        return []
+    }
+    let priorArr = [n + ys.reduce(0, +)]
+    return priorArr + accumulate(n: n, ys: Array(ys.dropLast()))
+}
