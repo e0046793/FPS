@@ -80,11 +80,20 @@ repeatedString s n = toInteger (noains + noainsremain)
                         noainsremain  = noains * nofullsremain + (length $ filter (== 'a') $ take noremainchar s)
 
 {- Jumping on the Clouds -}
-cl :: [Int] 
-cl = [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+j1 :: [Int]
+j1 = [0, 0, 0, 1, 0, 0]
+
+j2 :: [Int]
+j2 = [0, 0, 1, 0, 0, 1, 0]
+
+j3 :: [Int] 
+j3 = [0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
 
 jumpingOnClouds :: [Int] -> Int
-jumpingOnClouds = length . optimisedjumps 0 . drop 1 . steps 0 . index0bit 
+jumpingOnClouds xs = length $ optimisedjumps (head s) (tail s)
+               where 
+                s = (drop 1 . steps 0 . index0bit) xs
+                v = head xs 
 
 index0bit :: [Int] -> [Int]
 index0bit []   = []
@@ -95,9 +104,13 @@ steps _   []   = []
 steps n (x:xs) = (x - n) : steps x xs
 
 optimisedjumps :: Int -> [Int] -> [Int]
-optimisedjumps _     [] = []
-optimisedjumps n (x:xs) = if 1 == n && 1 == x then (n + x) : optimisedjumps (head xs) (drop 1 xs)
+optimisedjumps n     [] = [n]
+optimisedjumps n (x:xs) = if 1 == n && 1 == x then (n + x) : evanextpair xs
                           else n : optimisedjumps x xs
+
+evanextpair :: [Int] -> [Int]
+evanextpair     [] = []
+evanextpair (x:xs) = optimisedjumps x xs
 
 
 
