@@ -79,3 +79,35 @@ solution e ns n = elem (values e) (choices ns) && eval e == [n]
 
 e :: Expr
 e = App Mul (App Add (Val 1) (Val 50)) (App Sub (Val 25) (Val 10))
+
+
+{- BRUTE FORCE SOLUTION -}
+
+-- Returns all possible ways of splitting a list into two non-empty lists that append to give the original list
+split :: [a] -> [([a],[a])]
+split     [] = []
+split    [_] = []
+split (x:xs) = ([x],xs) : [(x:ls,rs) | (ls,rs) <- split xs]
+
+-- Retuns all possible expressions, whose list of values is precisely a given list
+exprs :: [Int] -> [Expr]
+exprs  [] = []
+exprs [n] = [Val n]
+exprs  ns = [e | (ls, rs) <- split ns, 
+                        l <- exprs ls, 
+                        r <- exprs rs,
+                        e <- combine l r]
+
+-- combine reach pair of expressions using each of the for numberic operators
+combine :: Expr -> Expr -> [Expr]
+combine l r = [App o l r | o <- ops]
+
+ops :: [Op]
+ops = [Add, Sub, Mul, Div]
+
+-- Returns all possible expressions that solve an instance of the countdown problem
+solutions :: [Int] -> Int -> [Expr]
+solutions ns n = [e | ns' <- choices ns, e <- exprs ns', eval e  == [n]]
+
+main :: IO ()
+main    = print (solutions [1,3,7,10,25,50] 765)
